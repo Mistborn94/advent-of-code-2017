@@ -3,8 +3,8 @@ package day5
 fun main(args: Array<String>) {
     val fileFromClasspath = Util.getFileFromClasspath("Day5.txt")
     val maze = fileFromClasspath.readLines().map { it.toInt() }.toTypedArray()
-    println("A: " + getBasicStepCount(maze))
-    println("B: " + getAlternateStepCount(maze))
+    println("A: ${getBasicStepCount(maze)}")
+    println("B: ${getAlternateStepCount(maze)}")
 }
 
 fun getStepCount(originalMaze: Array<Int>, getNewValue: (Int) -> Int): Int {

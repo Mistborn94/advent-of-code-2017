@@ -7,8 +7,8 @@ import kotlin.math.sqrt
 
 fun main(args: Array<String>) {
     val input = 347991
-    println("A: " + findSteps(input))
-    println("B: " + findNextSum(input))
+    println("A: ${findSteps(input)}")
+    println("B: ${findNextSum(input)}")
 }
 
 typealias LoopIndex = Int

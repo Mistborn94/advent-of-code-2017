@@ -8,8 +8,8 @@ fun main(args: Array<String>) {
 
     val totalA = getValidLines(fileFromClasspath, ::isValidUnique)
     val totalB = getValidLines(fileFromClasspath, ::isValidAnagram)
-    println("A: " + totalA)
-    println("B: " + totalB)
+    println("A: $totalA")
+    println("B: $totalB")
 }
 
 private fun getValidLines(fileFromClasspath: File, action: (String) -> Boolean): Int {

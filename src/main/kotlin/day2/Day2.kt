@@ -9,8 +9,8 @@ fun main(args: Array<String>) {
     val input = Util.getFileFromClasspath("Day2.txt")
 
     println(input.absolutePath)
-    println(getLargeSmallChecksum(input))
-    println(getDivisionChecksum(input))
+    println("A: ${getLargeSmallChecksum(input)}")
+    println("B: ${getDivisionChecksum(input)}")
 }
 
 fun getLargeSmallChecksum(inputFile: File): Int {
