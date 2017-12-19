@@ -1,15 +1,15 @@
 package day7
 
-import Util
+import FileUtil
 import java.io.File
 
 fun main(args: Array<String>) {
-    val fileFromClasspath = Util.getFileFromClasspath("Day7.txt")
+    val fileFromClasspath = FileUtil.getFileFromClasspath("Day7.txt")
 
     val treeRoot = TreeBuilder(fileFromClasspath).tree
     println("A: ${treeRoot.name}")
 
-    val (incorrectNode, weightAdjust) = treeRoot.findUnbalancedNode()
+    val (incorrectNode, weightAdjust) = treeRoot.unbalancedNode
     println("B: ${incorrectNode!!.weight + weightAdjust}")
 }
 
@@ -88,13 +88,14 @@ data class Node(val name: String, val weight: Int, private val children: List<No
     private val totalWeight: Int = childWeights.sum() + weight
 
     private val isBalanced: Boolean = children.isEmpty() || childWeights.distinct().size == 1
-    
-    fun findUnbalancedNode(): Pair<Node?, Int> {
+
+    val unbalancedNode
+        get(): Pair<Node?, Int> {
         val unbalancedChild = children.find { !it.isBalanced }
 
         return when {
             isBalanced -> Pair(null, 0)
-            unbalancedChild != null -> unbalancedChild.findUnbalancedNode()
+            unbalancedChild != null -> unbalancedChild.unbalancedNode
             else -> {
                 val childrenByWeight = children.groupBy { it.totalWeight }.map { it.value }
 

@@ -1,9 +1,9 @@
 package day6
 
-import Util
+import FileUtil
 
 fun main(args: Array<String>) {
-    val fileFromClasspath = Util.getFileFromClasspath("Day6.txt")
+    val fileFromClasspath = FileUtil.getFileFromClasspath("Day6.txt")
 
     val input = fileFromClasspath.readLines().first().split("\\s".toRegex()).map { it.toInt() }
 

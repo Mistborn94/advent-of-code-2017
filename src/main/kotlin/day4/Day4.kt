@@ -1,10 +1,10 @@
 package day4
 
-import Util
+import FileUtil
 import java.io.File
 
 fun main(args: Array<String>) {
-    val fileFromClasspath = Util.getFileFromClasspath("Day4.txt")
+    val fileFromClasspath = FileUtil.getFileFromClasspath("Day4.txt")
 
     val totalA = getValidLines(fileFromClasspath, ::isValidUnique)
     val totalB = getValidLines(fileFromClasspath, ::isValidAnagram)

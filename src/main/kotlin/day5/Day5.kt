@@ -1,7 +1,7 @@
 package day5
 
 fun main(args: Array<String>) {
-    val fileFromClasspath = Util.getFileFromClasspath("Day5.txt")
+    val fileFromClasspath = FileUtil.getFileFromClasspath("Day5.txt")
     val maze = fileFromClasspath.readLines().map { it.toInt() }.toTypedArray()
     println("A: ${getBasicStepCount(maze)}")
     println("B: ${getAlternateStepCount(maze)}")

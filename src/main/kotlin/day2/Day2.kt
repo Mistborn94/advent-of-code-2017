@@ -1,12 +1,12 @@
 package day2
 
-import Util
+import FileUtil
 import java.io.File
 import kotlin.math.max
 import kotlin.math.min
 
 fun main(args: Array<String>) {
-    val input = Util.getFileFromClasspath("Day2.txt")
+    val input = FileUtil.getFileFromClasspath("Day2.txt")
 
     println(input.absolutePath)
     println("A: ${getLargeSmallChecksum(input)}")
