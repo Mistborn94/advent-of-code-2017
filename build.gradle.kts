@@ -5,9 +5,12 @@ plugins {
     id("org.junit.platform.gradle.plugin") version "1.0.2"
 }
 
+val junitVersion = "5.0.2"
 dependencies {
     compile(kotlin("stdlib-jdk8"))
-    testCompile("org.junit.jupiter:junit-jupiter-engine:5.0.2")
+    testCompile(junit("junit-jupiter-engine"))
+    testCompile(junit("junit-jupiter-api"))
+    testCompile(junit("junit-jupiter-params"))
 }
 
 repositories {
@@ -17,3 +20,5 @@ repositories {
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+fun Build_gradle.junit(module: String) = "org.junit.jupiter:$module:$junitVersion"
