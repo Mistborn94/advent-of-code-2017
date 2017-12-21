@@ -3,22 +3,17 @@ package day9
 fun main(args: Array<String>) {
     val fileFromClasspath = FileUtil.getFileFromClasspath("Day9.txt")
 
-    val count = sumAllGroups(fileFromClasspath.readText())
+    val result = sumGroup(fileFromClasspath.readText(), 0)
 
-    println("A: ${count}")
-//    println("B: ${cpu.highestEver}")
-}
-
-fun sumAllGroups(readText: String): Int {
-    return sumGroup(readText, 0).score
+    println("A: ${result.score}")
+    println("B: ${result.garbageCount}")
 }
 
 data class StreamStats(val length: Int, val score: Int, val garbageCount: Int = 0) {
 //    operator fun plus(other: StreamStats): StreamStats = StreamStats(score + other.score, length + other.length, garbageCount + other.garbageCount)
 }
 
-//Pair<groupLength, Score>
-fun sumGroup(readText: String, depth: Int): StreamStats {
+fun sumGroup(readText: String, depth: Int = 0): StreamStats {
     var currentIndex = 1
     var currentScore = depth + 1
     var garbageCount = 0
@@ -26,24 +21,27 @@ fun sumGroup(readText: String, depth: Int): StreamStats {
     while (readText[currentIndex] != '}') {
         when (readText[currentIndex]) {
             '<' -> {
+                var cancelCount = 0
                 var newIndex = currentIndex
                 while (readText[newIndex] != '>') {
                     val nextIndex = readText.indexOfAny(charArrayOf('!', '>'), newIndex)
                     val charAt = readText[nextIndex]
 
-                    newIndex = if (charAt == '!') {
-                        nextIndex + 2
-                    } else {
-                        nextIndex
+                    newIndex = nextIndex
+
+                    if (charAt == '!') {
+                        cancelCount++
+                        newIndex += 2
                     }
                 }
+                garbageCount += newIndex - currentIndex - cancelCount * 2 - 1
                 currentIndex = newIndex + 1
             }
             '{' -> {
-                println("{ @$depth ${readText.substring(currentIndex)}")
                 val sumGroup = sumGroup(readText.substring(currentIndex), depth + 1)
                 currentIndex += sumGroup.length
                 currentScore += sumGroup.score
+                garbageCount += sumGroup.garbageCount
             }
             ',' -> {
                 currentIndex++
@@ -54,7 +52,7 @@ fun sumGroup(readText: String, depth: Int): StreamStats {
         }
     }
 
-    return StreamStats(currentIndex + 1, currentScore)
+    return StreamStats(currentIndex + 1, currentScore, garbageCount)
 }
 
 
