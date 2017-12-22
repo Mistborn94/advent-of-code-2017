@@ -19,9 +19,17 @@ private fun getBasicHash(lengths: List<Int>): List<Int> {
 
 fun getAsciiDenseHash(charSequence: CharSequence): String {
     val lengths = buildLengthsList(charSequence)
-    var knotB = KnotHash(lengths)
-    repeat(1, { knotB = knotB.next() })
-    return knotB.finalList
+
+    var currentStart = 0
+    var currentSkip = 0
+    var sparseHash: List<Int> = listOf()
+    repeat(64, {
+        val knot = KnotHash(lengths, currentStart, currentSkip)
+        currentStart = knot.finalPosition
+        currentSkip = knot.finalSkipSize
+        sparseHash = knot.finalList
+    })
+    return sparseHash
             .chunked(16)
             .map(List<Int>::xor)
             .toHexString()
@@ -37,22 +45,21 @@ fun List<Int>.toHexString(): String {
 
 fun buildLengthsList(charSequence: CharSequence) = charSequence.map(Char::toInt) + standardSuffix
 
-class KnotHash constructor(val lengths: List<Int>, val listSize: Int = 256, skipSize: Int = 0, startingPosition: Int = 0) {
+class KnotHash(val lengths: List<Int>, startingPosition: Int = 0, skipSize: Int = 0, val listSize: Int = 256) {
     val finalList: List<Int>
     val finalSkipSize: Int
     val finalPosition: Int
 
     init {
         var currentList: CircularList<Int> = CircularList(IntRange(0, listSize - 1).toList())
-        var currentSkipSize = skipSize
+        var currentSkipSize = skipSize % listSize
         var currentPosition = startingPosition
 
         lengths.forEach { length ->
             currentList = currentList.reverseSection(currentPosition, length)
-            val shiftAmount = length + currentSkipSize
-            currentPosition = currentList.normalizeIndex(currentPosition + shiftAmount)
+            currentPosition = currentList.normalizeIndex(currentPosition + (length + currentSkipSize))
 
-            ++currentSkipSize
+            currentSkipSize++
         }
 
         finalSkipSize = currentSkipSize
@@ -60,9 +67,6 @@ class KnotHash constructor(val lengths: List<Int>, val listSize: Int = 256, skip
         finalList = currentList.toList()
     }
 
-    fun next(): KnotHash {
-        return KnotHash(lengths, listSize, finalSkipSize, finalPosition)
-    }
 }
 
 class CircularList<T>(private val underlying: List<T>) : List<T> by underlying {
