@@ -17,7 +17,7 @@ private fun getBasicHash(lengths: List<Int>): List<Int> {
     return result
 }
 
-fun getAsciiDenseHash(charSequence: CharSequence): String {
+fun getAsciiDenseHash(charSequence: String): String {
     val lengths = buildLengthsList(charSequence)
     var knotB = KnotHash(lengths)
     repeat(1, { knotB = knotB.next() })
@@ -35,7 +35,8 @@ fun List<Int>.toHexString(): String {
             .reduce { acc, s -> acc + s }
 }
 
-fun buildLengthsList(charSequence: CharSequence) = charSequence.map(Char::toInt) + standardSuffix
+fun buildLengthsList(charSequence: String) =
+        charSequence.toByteArray().map(Byte::toInt) + standardSuffix
 
 class KnotHash constructor(val lengths: List<Int>, val listSize: Int = 256, skipSize: Int = 0, startingPosition: Int = 0) {
     val finalList: List<Int>
@@ -48,11 +49,13 @@ class KnotHash constructor(val lengths: List<Int>, val listSize: Int = 256, skip
         var currentPosition = startingPosition
 
         lengths.forEach { length ->
-            currentList = currentList.reverseSection(currentPosition, length)
-            val shiftAmount = length + currentSkipSize
-            currentPosition = currentList.normalizeIndex(currentPosition + shiftAmount)
+            if (length <= listSize) {
+                currentList = currentList.reverseSection(currentPosition, length)
+                val shiftAmount = length + currentSkipSize
+                currentPosition = currentList.normalizeIndex(currentPosition + shiftAmount)
 
-            ++currentSkipSize
+                ++currentSkipSize
+            }
         }
 
         finalSkipSize = currentSkipSize
