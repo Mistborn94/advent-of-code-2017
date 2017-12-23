@@ -1,6 +1,5 @@
 package day10
 
-val standardSuffix = listOf(17, 31, 73, 47, 23)
 
 fun main(args: Array<String>) {
     val input = "106,118,236,1,130,0,235,254,59,205,2,87,129,25,255,118"
@@ -16,31 +15,14 @@ private fun getBasicHash(lengths: List<Int>): List<Int> {
 }
 
 fun getAsciiDenseHash(charSequence: CharSequence): String {
-    val lengths = buildLengthsList(charSequence)
-
-    val knot = KnotHash(lengths = lengths)
-
-    return knot.finalList
-            .chunked(16)
-            .map(List<Int>::xor)
-            .toHexString()
+    return KnotHash(charSequence).hexHash
 }
-
-fun List<Int>.xor(): Int = this.reduce { acc, i -> acc.xor(i) }
-
-fun List<Int>.toHexString(): String {
-    return this.map { it.toString(16) }
-            .map { it.padStart(2, '0') }
-            .reduce { acc, s -> acc + s }
-}
-
-fun buildLengthsList(charSequence: CharSequence) = charSequence.map(Char::toInt) + standardSuffix
 
 class KnotHash(lengths: List<Int>, repeat: Int = 64, private val listSize: Int = 256) {
     val finalList: List<Int>
 
     init {
-        var currentList: List<Int> = IntRange(0, listSize - 1).toList()
+        var currentList: List<Int> = (0 until listSize).toList()
         var currentSkipSize = 0
         var currentPosition = 0
 
@@ -57,15 +39,21 @@ class KnotHash(lengths: List<Int>, repeat: Int = 64, private val listSize: Int =
 
         finalList = currentList.toList()
     }
+
+    val hexHash = finalList
+            .chunked(16)
+            .map(List<Int>::xor).toHexString()
+
+    constructor(string: CharSequence) : this(string.map(Char::toInt) + STANDARD_SUFFIX)
+
+    companion object {
+        val STANDARD_SUFFIX = listOf(17, 31, 73, 47, 23)
+    }
 }
 
-fun <T> List<T>.shiftLeft(amount: Int): List<T> {
-    return this.subList(amount, size) + this.subList(0, amount)
-}
+fun <T> List<T>.shiftLeft(amount: Int): List<T> = this.subList(amount, size) + this.subList(0, amount)
 
-fun <T> List<T>.shiftRight(amount: Int): List<T> {
-    return this.shiftLeft(size - amount)
-}
+fun <T> List<T>.shiftRight(amount: Int): List<T> = this.shiftLeft(size - amount)
 
 fun <T> List<T>.reverseSection(start: Int, length: Int): List<T> {
     val shiftLeft = this.shiftLeft(start)
@@ -77,3 +65,9 @@ fun <T> List<T>.normalizeIndex(index: Int): Int {
     val normalized = index % size
     return if (normalized < 0) size + normalized else normalized
 }
+
+fun List<Int>.xor(): Int = this.reduce { acc, i -> acc.xor(i) }
+
+fun List<Int>.toHexString(): String = this.map { it.toString(16) }
+        .map { it.padStart(2, '0') }
+        .reduce { acc, s -> acc + s }

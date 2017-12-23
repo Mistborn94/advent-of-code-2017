@@ -8,7 +8,7 @@ internal class Day7KtTest {
 
     @Test
     fun buildTree() {
-        val file = FileUtil.getFileFromClasspath("Day7/sample.txt")
+        val file = FileUtil.getFileFromClasspath("Day7.txt")
         val rootNode = buildTree(file)
 
         assertEquals("tknk", rootNode.name)

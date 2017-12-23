@@ -9,7 +9,7 @@ internal class Day8KtTest {
 
     @Test
     fun getMaxRegisterValue() {
-        val file = FileUtil.getFileFromClasspath("Day8/sample.txt")
+        val file = FileUtil.getFileFromClasspath("Day8.txt")
         val cpu = Cpu(file)
         assertEquals(1, cpu.max)
         assertEquals(10, cpu.highestEver)

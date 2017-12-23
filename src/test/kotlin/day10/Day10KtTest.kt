@@ -48,11 +48,6 @@ class Day10KtTest {
     }
 
     @Test
-    fun testBuildLengthsList() {
-        assertEquals(listOf(49, 44, 50, 44, 51, 17, 31, 73, 47, 23), buildLengthsList("1,2,3"))
-    }
-
-    @Test
     fun testToHexString() {
         val input = listOf(64, 7, 255)
         assertEquals("4007ff", input.toHexString())

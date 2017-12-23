@@ -5,7 +5,7 @@ import FileUtil
 fun main(args: Array<String>) {
     val fileFromClasspath = FileUtil.getFileFromClasspath("Day6.txt")
 
-    val input = fileFromClasspath.readLines().first().split("\\s".toRegex()).map { it.toInt() }
+    val input = fileFromClasspath.readText().split("\\s".toRegex()).map { it.toInt() }
 
     val (resultA, resultB) = calculateIterations(input)
     println("A: $resultA")
