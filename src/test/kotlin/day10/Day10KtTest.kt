@@ -1,6 +1,5 @@
 package day10
 
-import jdk.nashorn.internal.ir.annotations.Ignore
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -37,7 +36,7 @@ class Day10KtTest {
     @ParameterizedTest
     @MethodSource("createInputsA")
     fun testApplyHashA(lengths: List<Int>, expected: List<Int>) {
-        val knotHash = KnotHash(lengths, 5)
+        val knotHash = KnotHash(lengths, 1, 5)
         assertEquals(expected, knotHash.finalList)
     }
 
@@ -50,7 +49,6 @@ class Day10KtTest {
 
     @Test
     fun testBuildLengthsList() {
-        assertEquals(listOf(49, 44, 50, 44, 51, 17, 31, 73, 47, 23), buildLengthsList("1,2,3"))
         assertEquals(listOf(49, 44, 50, 44, 51, 17, 31, 73, 47, 23), buildLengthsList("1,2,3"))
     }
 

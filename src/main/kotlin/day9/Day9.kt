@@ -9,9 +9,7 @@ fun main(args: Array<String>) {
     println("B: ${result.garbageCount}")
 }
 
-data class StreamStats(val length: Int, val score: Int, val garbageCount: Int = 0) {
-//    operator fun plus(other: StreamStats): StreamStats = StreamStats(score + other.score, length + other.length, garbageCount + other.garbageCount)
-}
+data class StreamStats(val length: Int, val score: Int, val garbageCount: Int = 0)
 
 fun sumGroup(readText: String, depth: Int = 0): StreamStats {
     var currentIndex = 1

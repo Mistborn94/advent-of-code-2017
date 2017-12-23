@@ -12,24 +12,15 @@ fun main(args: Array<String>) {
 }
 
 private fun getBasicHash(lengths: List<Int>): List<Int> {
-    val knotA = KnotHash(lengths)
-    val result = knotA.finalList
-    return result
+    return KnotHash(lengths).finalList
 }
 
 fun getAsciiDenseHash(charSequence: CharSequence): String {
     val lengths = buildLengthsList(charSequence)
 
-    var currentStart = 0
-    var currentSkip = 0
-    var sparseHash: List<Int> = listOf()
-    repeat(64, {
-        val knot = KnotHash(lengths, currentStart, currentSkip)
-        currentStart = knot.finalPosition
-        currentSkip = knot.finalSkipSize
-        sparseHash = knot.finalList
-    })
-    return sparseHash
+    val knot = KnotHash(lengths = lengths)
+
+    return knot.finalList
             .chunked(16)
             .map(List<Int>::xor)
             .toHexString()
@@ -45,79 +36,44 @@ fun List<Int>.toHexString(): String {
 
 fun buildLengthsList(charSequence: CharSequence) = charSequence.map(Char::toInt) + standardSuffix
 
-class KnotHash(val lengths: List<Int>, startingPosition: Int = 0, skipSize: Int = 0, val listSize: Int = 256) {
+class KnotHash(lengths: List<Int>, repeat: Int = 64, private val listSize: Int = 256) {
     val finalList: List<Int>
-    val finalSkipSize: Int
-    val finalPosition: Int
 
     init {
-        var currentList: CircularList<Int> = CircularList(IntRange(0, listSize - 1).toList())
-        var currentSkipSize = skipSize % listSize
-        var currentPosition = startingPosition
+        var currentList: List<Int> = IntRange(0, listSize - 1).toList()
+        var currentSkipSize = 0
+        var currentPosition = 0
 
-        lengths.forEach { length ->
-            currentList = currentList.reverseSection(currentPosition, length)
-            currentPosition = currentList.normalizeIndex(currentPosition + (length + currentSkipSize))
+        repeat(repeat, {
 
-            currentSkipSize++
-        }
+            lengths.forEach { length ->
+                if (length <= listSize) {
+                    currentList = currentList.reverseSection(currentPosition, length)
+                    currentPosition = currentList.normalizeIndex(currentPosition + length + currentSkipSize)
+                    currentSkipSize++
+                }
+            }
+        })
 
-        finalSkipSize = currentSkipSize
-        finalPosition = currentPosition
         finalList = currentList.toList()
     }
-
 }
 
-class CircularList<T>(private val underlying: List<T>) : List<T> by underlying {
-
-    override operator fun get(index: Int): T = underlying[normalizeIndex(index)]
-
-    fun normalizeIndex(index: Int): Int {
-        val normalized = index % size
-        return if (normalized < 0) size + normalized else normalized
-    }
-
-    override fun subList(fromIndex: Int, toIndex: Int): List<T> {
-
-        val normalFromIndex = normalizeIndex(fromIndex)
-        val normalToIndex = normalizeIndex(toIndex)
-
-        return when {
-            normalToIndex > normalFromIndex -> underlying.subList(normalFromIndex, normalToIndex)
-            else -> {
-                val window1 = underlying.subList(normalFromIndex, size)
-                val window2 = underlying.subList(0, normalToIndex)
-                window1 + window2
-            }
-        }
-    }
-
-    operator fun plus(elements: Iterable<T>): List<T> {
-        return CircularList(underlying + elements)
-    }
-
-    fun reverseSection(from: Int, length: Int): CircularList<T> {
-        val startIndex = normalizeIndex(from)
-        val endIndex = normalizeIndex(startIndex + length)
-        val reversed = subList(startIndex, endIndex).reversed()
-
-        return when {
-            length <= 1 -> this
-            endIndex > startIndex -> {
-                val before = underlying.subList(0, startIndex)
-                val after = underlying.subList(endIndex, size)
-                CircularList(before + reversed + after)
-            }
-            else -> {
-                val between = underlying.subList(endIndex, startIndex)
-                val endSize = size - startIndex
-                val after = reversed.subList(0, endSize)
-                val before = reversed.subList(endSize, reversed.size)
-                CircularList(before + between + after)
-            }
-        }
-    }
+fun <T> List<T>.shiftLeft(amount: Int): List<T> {
+    return this.subList(amount, size) + this.subList(0, amount)
 }
 
+fun <T> List<T>.shiftRight(amount: Int): List<T> {
+    return this.shiftLeft(size - amount)
+}
 
+fun <T> List<T>.reverseSection(start: Int, length: Int): List<T> {
+    val shiftLeft = this.shiftLeft(start)
+    val withReversed = shiftLeft.subList(0, length).reversed() + shiftLeft.subList(length, size)
+    return withReversed.shiftRight(start)
+}
+
+fun <T> List<T>.normalizeIndex(index: Int): Int {
+    val normalized = index % size
+    return if (normalized < 0) size + normalized else normalized
+}
