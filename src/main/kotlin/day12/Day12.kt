@@ -19,7 +19,7 @@ fun countGroups(graph: Map<Int, Collection<Int>>): Int {
         visited.addAll(getGroup(graph, node))
         groupCount++
     }
-    return groupCount;
+    return groupCount
 }
 
 fun getGroup(graph: Map<Int, Collection<Int>>, i: Int): Collection<Int> {

@@ -24,26 +24,31 @@ sealed class DanceMove {
     abstract fun apply(list: MutableList<Char>)
 }
 
-fun <E> MutableList<E>.swap(ai: Int, bi: Int) {
-    val tmp = this[ai]
-    this[ai] = this[bi]
-    this[bi] = tmp
-}
-
-class ExchangeMove(val first: Int, val second: Int) : DanceMove() {
+class ExchangeMove(private val first: Int, private val second: Int) : DanceMove() {
     override fun apply(list: MutableList<Char>) {
         list.swap(first, second)
     }
-}
-
-private fun <T> MutableList<T>.partner(a: T, b: T) {
-    this.swap(indexOf(a), indexOf(b))
 }
 
 class PartnerMove(private val first: Char, private val second: Char) : DanceMove() {
     override fun apply(list: MutableList<Char>) {
         list.partner(first, second)
     }
+}
+class SpinMove(private val spinAmount: Int) : DanceMove() {
+    override fun apply(list: MutableList<Char>) {
+        list.spin(spinAmount)
+    }
+}
+
+fun <E> MutableList<E>.swap(ai: Int, bi: Int) {
+    val tmp = this[ai]
+    this[ai] = this[bi]
+    this[bi] = tmp
+}
+
+private fun <T> MutableList<T>.partner(a: T, b: T) {
+    this.swap(indexOf(a), indexOf(b))
 }
 
 private fun <T> MutableList<T>.spin(amount: Int) {
@@ -54,8 +59,3 @@ private fun <T> MutableList<T>.spin(amount: Int) {
     }
 }
 
-class SpinMove(private val spinAmount: Int) : DanceMove() {
-    override fun apply(list: MutableList<Char>) {
-        list.spin(spinAmount)
-    }
-}

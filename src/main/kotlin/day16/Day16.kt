@@ -16,11 +16,11 @@ fun dance(stepStrings: List<String>, programRange: CharRange, iterations: Int = 
     val steps = stepStrings.map { DanceMove.getMove(it) }
     val cache = mutableMapOf<String, Pair<String, Int>>()
 
-    var previous: String = ""
+    var previous = ""
     var last = programs.toDanceString()
 
     (0 until iterations).asSequence().takeWhile { !cache.contains(last) }.forEach {
-        steps.forEach { it.apply(programs) }
+        programs.applyDanceMoves(steps)
 
         previous = last
         last = programs.toDanceString()
@@ -38,6 +38,10 @@ fun dance(stepStrings: List<String>, programRange: CharRange, iterations: Int = 
     }
 
     return last
+}
+
+private fun MutableList<Char>.applyDanceMoves(simpleSteps: List<DanceMove>) {
+    simpleSteps.forEach { it.apply(this) }
 }
 
 private fun MutableList<Char>.toDanceString() = joinToString("")

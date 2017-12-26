@@ -1,5 +1,7 @@
 package day10
 
+import normalizeIndex
+
 
 fun main(args: Array<String>) {
     val input = "106,118,236,1,130,0,235,254,59,205,2,87,129,25,255,118"
@@ -59,11 +61,6 @@ fun <T> List<T>.reverseSection(start: Int, length: Int): List<T> {
     val shiftLeft = this.shiftLeft(start)
     val withReversed = shiftLeft.subList(0, length).reversed() + shiftLeft.subList(length, size)
     return withReversed.shiftRight(start)
-}
-
-fun <T> List<T>.normalizeIndex(index: Int): Int {
-    val normalized = index % size
-    return if (normalized < 0) size + normalized else normalized
 }
 
 fun List<Int>.xor(): Int = this.reduce { acc, i -> acc.xor(i) }
