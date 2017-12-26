@@ -10,13 +10,13 @@ internal class Day15KtTest {
 
     @Test
     fun countBasicMatching() {
-        assertEquals(1, countBasicMatching(initialA, initialB, 5).toLong())
-        assertEquals(588L, countBasicMatching(initialA, initialB, 40_000_000).toLong())
+        assertEquals(1, countPart1(initialA, initialB, 5).toLong())
+        assertEquals(588L, countPart1(initialA, initialB, 40_000_000).toLong())
     }
 
     @Test
     fun countAdvancedMatching() {
-        assertEquals(0, countAdvancedMatching(initialA, initialB, 5).toLong())
-        assertEquals(309, countAdvancedMatching(initialA, initialB, 5_000_000).toLong())
+        assertEquals(0, countPart2(initialA, initialB, 5).toLong())
+        assertEquals(309, countPart2(initialA, initialB, 5_000_000).toLong())
     }
 }

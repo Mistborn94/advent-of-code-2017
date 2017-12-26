@@ -6,7 +6,3 @@ object FileUtil {
 
 fun <T, R> File.mapLines(mapper: (String) -> T, collector: (Sequence<T>) -> R): R = this.useLines { collector(it.map(mapper)) }
 fun <R> File.mapLines(mapper: (String) -> R): List<R> = this.mapLines(mapper, { it.toList() })
-
-
-
-
