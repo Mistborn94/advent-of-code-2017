@@ -2,7 +2,7 @@ package day18
 
 import java.util.*
 
-class Duet(internal val programId: Int, other: Duet?) {
+class Duet(programId: Int, other: Duet?) {
     private val instructions = mutableListOf<Instruction>()
     private val registers = mutableMapOf<Char, Long>()
     private val send: Queue<Long>
@@ -23,9 +23,10 @@ class Duet(internal val programId: Int, other: Duet?) {
     }
 
     private var lastSoundFrequency = 0L
+    private val instructionCount: Int get() = instructions.size
     var currentInstruction = 0L
     var sendCount = 0
-    val terminated get() = currentInstruction < 0 || currentInstruction > instructionCount
+    val terminated get() = currentInstruction < 0 || currentInstruction >= instructionCount
 
     fun receive(register: Char): Boolean {
         return if (receive.isNotEmpty()) {
@@ -96,7 +97,6 @@ class Duet(internal val programId: Int, other: Duet?) {
         return lastSoundFrequency
     }
 
-    val instructionCount: Int get() = instructions.size
 
     fun evaluateCurrentInstruction(): Boolean = !terminated && instructions[currentInstruction.toInt()].evaluate()
 
@@ -119,8 +119,8 @@ class Duet(internal val programId: Int, other: Duet?) {
 }
 
 class DoubleDuet {
-    val program0 = Duet(0)
-    val program1 = Duet(1, program0)
+    private val program0 = Duet(0)
+    private val program1 = Duet(1, program0)
 
     fun addPart2Instruction(name: String, register: Char, value: String?) {
         program0.addPart2Instruction(name, register, value)
@@ -131,9 +131,7 @@ class DoubleDuet {
         var program0Success = program0.evaluateCurrentInstruction()
         var program1Success = program1.evaluateCurrentInstruction()
 
-        var loopIndex = 0
         while (program0Success || program1Success) {
-            loopIndex++
             program0Success = program0.evaluateCurrentInstruction()
             program1Success = program1.evaluateCurrentInstruction()
         }
@@ -155,7 +153,7 @@ abstract class Instruction(val duet: Duet) {
 abstract class RegisterChangeInstruction(duet: Duet, private val register: Char, valueString: String) : Instruction(duet) {
 
     val instructionValue = duet.evaluateInstruction(valueString)
-    val registerValue: () -> Long = { duet.getRegisterValue(register) }
+    val registerValue = { duet.getRegisterValue(register) }
 
     protected fun setAndContinue(newValue: Long): Boolean {
         duet.setRegisterValue(register, newValue)
@@ -165,7 +163,7 @@ abstract class RegisterChangeInstruction(duet: Duet, private val register: Char,
 
 class PlaySound(private val register: Char, duet: Duet) : Instruction(duet) {
 
-    private val registerValue: () -> Long = { duet.getRegisterValue(register) }
+    private val registerValue = { duet.getRegisterValue(register) }
 
     override fun evaluate(): Boolean {
         duet.playSound(registerValue())
@@ -195,7 +193,7 @@ class Modulus(register: Char, instruction: String, duet: Duet) : RegisterChangeI
 }
 
 class Recover(register: Char, duet: Duet) : Instruction(duet) {
-    private val registerValue: () -> Long = { duet.getRegisterValue(register) }
+    private val registerValue = { duet.getRegisterValue(register) }
 
     override fun evaluate(): Boolean = if (registerValue() != 0L) {
         false
