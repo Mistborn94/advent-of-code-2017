@@ -1,24 +1,38 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.2.10"
-    id("org.junit.platform.gradle.plugin") version "1.0.2"
+    kotlin("jvm") version "1.9.20"
 }
 
-val junitVersion = "5.0.2"
-dependencies {
-    compile(kotlin("stdlib-jdk8"))
-    testCompile(junit("junit-jupiter-engine"))
-    testCompile(junit("junit-jupiter-api"))
-    testCompile(junit("junit-jupiter-params"))
-}
+group = "dev.renette"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+dependencies {
+    implementation(kotlin("stdlib-jdk8"))
+
+    testImplementation(kotlin("test-junit5"))
 }
 
-fun Build_gradle.junit(module: String) = "org.junit.jupiter:$module:$junitVersion"
+tasks.withType<Test> {
+    useJUnitPlatform()
+    dependsOn("cleanTest")
+    testLogging {
+        events(FAILED, STANDARD_ERROR, SKIPPED, PASSED)
+        exceptionFormat = FULL
+        showStandardStreams = true
+        showExceptions = true
+        showCauses = true
+    }
+    //Increase max heap size for day 24 brute force solution
+    jvmArgs = listOf("-Xmx4g")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "21"
+}
