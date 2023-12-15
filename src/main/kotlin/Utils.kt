@@ -10,3 +10,6 @@ fun <T> List<T>.normalizeIndex(index: Int): Int {
     val normalized = index % size
     return if (normalized < 0) size + normalized else normalized
 }
+
+fun <A, B> Iterable<A>.cartesianProduct(other: Iterable<B>): List<Pair<A, B>> = flatMap { a -> other.map { b -> a to b } }
+fun <A, B, R> Iterable<A>.cartesianProduct(other: Iterable<B>, mapper: (A, B) -> R): List<R> = flatMap { a -> other.map { b -> mapper(a, b) } }

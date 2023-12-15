@@ -17,6 +17,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     testImplementation(kotlin("test-junit5"))
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
 }
 
 tasks.withType<Test> {
